@@ -49,8 +49,9 @@ public class GeneralRoller extends SubsystemBase {
 
   // You generally only need one motor for the rollers on Vivaldi
   private final CANSparkMax m_spark;
+
+  // Hint: motors need a voltage! You'll still need to set the motor's voltage yourself, though.
   private double desiredVoltage = 0;
-  private GeneralRollerStates currentState = GeneralRollerStates.StateOff;
 
   public GeneralRoller(int port, boolean setInverted) {
     m_spark = new CANSparkMax(port, MotorType.kBrushless);
@@ -59,8 +60,7 @@ public class GeneralRoller extends SubsystemBase {
 
     // You have been given the CANSparkMax here, which is representative of the motor driving this shaft, 
     // you still need to confige it! Look at the docs and the provided arguments to this subsystem, and determine what those configs should be.
-    m_spark.setInverted(setInverted);
-    m_spark.setIdleMode(IdleMode.kBrake);
+
 
   }
 
