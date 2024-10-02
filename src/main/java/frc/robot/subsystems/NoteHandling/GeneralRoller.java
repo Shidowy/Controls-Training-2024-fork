@@ -70,6 +70,21 @@ public class GeneralRoller extends SubsystemBase {
   public void periodic() {
     //This function runs ~20 times per second. It is in every subsytem, and is effectively your "while" loop or "update" loop.
     //Thus, the usage of while(true) and similar loops is generally avoided--- they can cause memory-leaks and other jank! Instead, put looping code here. 
+    switch (currentState) {
+      case StateOff:
+        m_spark.setVoltage(0);
+        break;
+      case StateForward:
+        m_spark.setVoltage(6);
+        break;
+      case StateReverse:
+        m_spark.setVoltage(-6);
+        break;
+      case StateForwardFast:
+        m_spark.set(12);
+      default:
+        break;
+    }
   }
 
   public double getCurrent() {
