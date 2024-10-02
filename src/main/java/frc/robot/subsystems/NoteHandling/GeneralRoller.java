@@ -30,7 +30,7 @@ public class GeneralRoller extends SubsystemBase {
      * https://v6.docs.ctr-electronics.com/en/stable/docs/api-reference/api-usage/api-overview.html | API reference for Cross the Road Electronics. Won't help too much here specifically.
      * https://github.wpilib.org/allwpilib/docs/release/java/index.html | provides docs for a lot of stuff you probably won't use here, like competition APIs. Still a good tool. 
      *
-     * 
+     * //GEORGE is nice and kind and cool and smart and gets good grade
      */
 
 
@@ -55,6 +55,7 @@ public class GeneralRoller extends SubsystemBase {
   public GeneralRoller(int port, boolean setInverted) {
     m_spark = new CANSparkMax(port, MotorType.kBrushless);
 
+    //wyatt s gay
 
     // You have been given the CANSparkMax here, which is representative of the motor driving this shaft, 
     // you still need to confige it! Look at the docs and the provided arguments to this subsystem, and determine what those configs should be.
