@@ -56,6 +56,7 @@ public class GeneralRoller extends SubsystemBase {
   public GeneralRoller(int port, boolean setInverted) {
     m_spark = new CANSparkMax(port, MotorType.kBrushless);
 
+    //wyatt s gay
 
     // You have been given the CANSparkMax here, which is representative of the motor driving this shaft, 
     // you still need to confige it! Look at the docs and the provided arguments to this subsystem, and determine what those configs should be.
