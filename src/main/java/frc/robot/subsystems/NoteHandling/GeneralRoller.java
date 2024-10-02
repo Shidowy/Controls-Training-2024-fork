@@ -6,6 +6,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.GeneralRollerConstants.*;
+
+import org.opencv.features2d.MSER;
+
 import static frc.robot.Constants.*;
 
 import com.revrobotics.CANSparkMax;
@@ -89,8 +92,7 @@ public class GeneralRoller extends SubsystemBase {
 
   public double getCurrent() {
     //hint: this method wants you to return the Amperage (Current, or A) to the motor. the LinearFilter is useful here.
-
-    return 1.0; //replace 1.0 with your return value
+    return m_spark.getOutputCurrent(); //replace 1.0 with your return value
   }
 
 
@@ -98,12 +100,12 @@ public class GeneralRoller extends SubsystemBase {
   
   public void requestState(GeneralRollerStates desiredState) {
     // hint: this method is called with a GeneralRollerState when the state is to be changed.
-    
+    currentState = desiredState;
   }
  
   
   public GeneralRollerStates getCurrentState() { 
-    return GeneralRollerStates.StateForward; //You should change this!
+    return GeneralRollerStates.desiredState(); //You should change this!
     
   }
 
