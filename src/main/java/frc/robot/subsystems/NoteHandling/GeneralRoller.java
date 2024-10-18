@@ -106,6 +106,7 @@ public class GeneralRoller extends SubsystemBase {
   
   public GeneralRollerStates getCurrentState() { 
     return currentState; //You should change this!
+    
   }
 
   // misc/processing methods go here, getters and setters should follow above format

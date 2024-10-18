@@ -55,7 +55,7 @@ public class RobotContainer {
   private final WL_CommandXboxController m_operator = new WL_CommandXboxController(kOperatorPort);
 
 
-  private final GeneralRoller roller = new GeneralRoller(0, false); //Todo: replace port with an actual damn number, just give it the indexer or sm.
+  private final GeneralRoller roller = new GeneralRoller(kFeederPort, false); //Todo: replace port with an actual damn number, just give it the indexer or sm.
   GenericEntry constantsTest;
 
 
