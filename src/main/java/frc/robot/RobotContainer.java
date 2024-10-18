@@ -87,6 +87,16 @@ public class RobotContainer {
       NoteHandlingCommandBuilder.generalRollerRunForward(roller)
 
     );
+     m_driver.leftTrigger().onTrue(
+
+      NoteHandlingCommandBuilder.generalRollerRunReverse(roller)
+
+    );
+     m_driver.rightBumper().onTrue(
+
+      NoteHandlingCommandBuilder.generalRollerStop(roller)
+
+    );
    
   }
 
