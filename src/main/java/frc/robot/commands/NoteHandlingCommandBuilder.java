@@ -19,5 +19,12 @@ public class NoteHandlingCommandBuilder {
         return new InstantCommand(() -> generalRoller.requestState(GeneralRollerStates.StateForward), generalRoller);
     }
     
+    public static Command generalRollerRunReverse(GeneralRoller generalRoller) {
+        return new InstantCommand(() -> generalRoller.requestState(GeneralRollerStates.StateReverse), generalRoller);
+    }
 
+    public static Command generalRollerStop(GeneralRoller generalRoller) {
+        return new InstantCommand(() -> generalRoller.requestState(GeneralRollerStates.StateOff), generalRoller);
+    }    
+    
 }
