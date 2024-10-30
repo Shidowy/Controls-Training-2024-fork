@@ -16,52 +16,35 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 
-public class SubsystemName extends SubsystemBase {
+public class Intake extends SubsystemBase {
   // Misc variables for specific subsystem go here
 
 
   // Enum representing all of the states the subsystem can be in
-  public enum SubsystemNameStates {
+  public enum Intake {
     StateOff,
     StateOuttake,
     StateIntake,
   }
 
 
-  public static SubsystemNameStates m_subsystemNameCurrentState;
-  public static SubsystemNameStates m_subsystemNameRequestedState;
-
+ public static IntakeStates m_subsystemNameCurrentState;
+  public static IntakeStates m_subsystemNameRequestedState;
 
   // You may need more than one motor
-  private final CANSparkMax m_spark = new CANSparkMax(kSubsystemNamePort, MotorType.kBrushless);
+  private final CANSparkMax m_spark = new CANSparkMax(kIntakePort, MotorType.kBrushless);
   // Units depend on the units of the setpoint() and calculate() methods. This example will use meters
-  private final PIDController m_feedback = new PIDController(kPSubsystemName,
-    kISubsystemName,
-    kDSubsystemName);
-  private double feedbackOutput = 0;
+  private double desiredVoltage = 0;
 
-
-  private double desiredPosition = 0;
-
-
-  public SubsystemName() {
+  public Intake() {
     // Misc setup goes here
+    m_spark.setSmartCurrentLimit(kIntakeCurrentLimit);
+    m_spark.setInverted(kIntakeInverted); 	
+    m_spark.enableVoltageCompensation(kNominalVoltage);
+    m_spark.setIdleMode(IdleMode.kCoast);
 
-
-    m_spark.setSmartCurrentLimit(kSubsystemNameCurrentLimit);
-
-
-    m_spark.setInverted(kSubsystemInverted);    
-
-
-    m_subsystemNameCurrentState = SubsystemNameStates.StateTheSubsystemStartsIn;
-    m_subsystemNameRequestedState = SubsystemNameStates.StateTheSubsystemStartsIn;
-
-
-    // if we design the robot with a proper resting position in mind
-    // this should be the only initilization necessary
-    // no firstTime2 :)
-    m_spark.getEncoder().setPosition(0);
+    m_subsystemNameCurrentState = IntakeStates.StateOff;
+    m_subsystemNameRequestedState = IntakeStates.StateOff;
   }
 
 
