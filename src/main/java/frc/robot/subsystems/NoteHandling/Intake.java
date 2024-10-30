@@ -27,7 +27,7 @@ public class Intake extends SubsystemBase {
 
 
  public static IntakeStates m_subsystemNameCurrentState;
-  public static IntakeStates m_subsystemNameRequestedState;
+ public static IntakeStates m_subsystemNameRequestedState;
 
   // You may need more than one motor
   private final CANSparkMax m_spark = new CANSparkMax(kIntakePort, MotorType.kBrushless);
