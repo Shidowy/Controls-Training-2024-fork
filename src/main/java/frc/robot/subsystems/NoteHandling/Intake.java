@@ -29,9 +29,9 @@ public class Intake extends SubsystemBase {
  public static IntakeStates m_subsystemNameCurrentState;
  public static IntakeStates m_subsystemNameRequestedState;
 
-  // You may need more than one motor
+
   private final CANSparkMax m_spark = new CANSparkMax(kIntakePort, MotorType.kBrushless);
-  // Units depend on the units of the setpoint() and calculate() methods. This example will use meters
+
   private double desiredVoltage = 0;
 
   public Intake() {
