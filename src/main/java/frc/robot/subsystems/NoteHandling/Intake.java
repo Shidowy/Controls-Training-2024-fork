@@ -10,14 +10,16 @@ import edu.wpi.first.math.controller.PIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-public class Intake extends SubsystemBase {
+public class SubsystemName extends SubsystemBase {
   // Misc variables for specific subsystem go here
 
   // Enum representing all of the states the subsystem can be in
   public enum SubsystemNameStates {
-    StateOff.
-    StateForward
-    StateReverse
+    StateTheSubsystemStartsIn,
+    StateMovingToRequestedState,
+    StateA,
+    StateB,
+    ...
   }
 
   public static SubsystemNameStates m_subsystemNameCurrentState;
