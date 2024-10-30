@@ -1,24 +1,16 @@
 package frc.robot.subsystems.SubFolder;
-
-
-// Imports go here
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-
 import static frc.robot.Constants.SubsystemNameConstants.*;
+
 import static frc.robot.Constants.*;
-
-
 import edu.wpi.first.math.controller.PIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 
 public class Intake extends SubsystemBase {
-  // Misc variables for specific subsystem go here
 
-
-  // Enum representing all of the states the subsystem can be in
   public enum Intake {
     StateOff,
     StateOuttake,
@@ -35,7 +27,6 @@ public class Intake extends SubsystemBase {
   private double desiredVoltage = 0;
 
   public Intake() {
-    // Misc setup goes here
     m_spark.setSmartCurrentLimit(kIntakeCurrentLimit);
     m_spark.setInverted(kIntakeInverted); 	
     m_spark.enableVoltageCompensation(kNominalVoltage);
@@ -49,55 +40,19 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     switch (m_subsystemNameRequestedState) {
-      case StateA:
-        desiredPosition = 0;
+      case StateOff:
+        desiredVoltage = 0;
         break;
-      case StateB:
-        desiredPosition = 0;
+      case StateIntake:
+        desiredVoltage = 5;
         break;
-      ...
+      case StateOuttake:
+        desiredVoltage = -5;
+        break;
     }
-   
+	
     runControlLoop();
 
-
-    if (getError() < kSubsystemNameErrorTolerance)
-      m_subsystemNameCurrentState = m_subsystemNameRequestedState;
-    else
-      m_subsystemNameCurrentState = SubsystemNameStates.StateMovingToRequestedState;    
+    m_subsystemNameCurrentState = m_subsystemNameRequestedState;
   }
-
-
-  public void runControlLoop() {
-    feedbackOutput = m_feedback.calculate(getPosition(), desiredPosition);
-    m_spark.set(feedbackOutput / kNominalVoltage);
-  }
-
-
-  private double getPosition() {
-    return m_spark.getEncoder().getPosition() * kSubsystemMetersPerRev;
-  }
-
-
-  public double getError() {
-    return Math.abs(getPosition() - desiredPosition);
-  }
- 
-  // example of a "setter" method
-  public void requestState(SubsystemNameStates desiredState) {
-    m_subsystemNameRequestedState = desiredState;
-  }
- 
-  // example of a "getter" method
-  public SubsystemNameStates getCurrentState() {
-    return m_subsystemNameCurrentState;
-  }
-
-
-  // misc methods go here, getters and setters should follow above format
 }
-
-
-
-
-
