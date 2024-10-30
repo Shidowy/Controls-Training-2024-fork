@@ -15,11 +15,9 @@ public class SubsystemName extends SubsystemBase {
 
   // Enum representing all of the states the subsystem can be in
   public enum SubsystemNameStates {
-    StateTheSubsystemStartsIn,
-    StateMovingToRequestedState,
-    StateA,
-    StateB,
-    ...
+    StateOff.
+    StateForward
+    StateReverse
   }
 
   public static SubsystemNameStates m_subsystemNameCurrentState;
