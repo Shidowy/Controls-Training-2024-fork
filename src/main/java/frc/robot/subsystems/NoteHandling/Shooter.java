@@ -23,35 +23,32 @@ import com.ctre.phoenix6.controls.*;
 public class Shooter extends SubsystemBase {
 
     public enum ShooterStates{
-        OFF,
-        LOW_GOAL,
-        MID_GOAL,
-        HIGH_GOAL,
-        TRANSITION
+        // MAKE STATES
+        // some considerations: off state, states for shooter at each type of scoring location, and a transition state between states
+
+        // ||||||||||||||||||||||||||||||||
     }
 
     public static ShooterStates m_shooterRequestedState;
     public static ShooterStates m_shooterCurrentState;
+ 
+    // CREATE TALON MOTORS HERE
+    // the shooter has two talon motors on it, have fun
 
-    private final TalonFX leftShooterMotor;
-    private final TalonFX rightShooterMotor
+    // ||||||||||||||||||||||||||||||||
 
     private double desiredVelocity = 0;
     private double desiredVoltage = 0;
 
+    // you might notice a new type right below here called a "DoubleSupplier," don't worry about it, you won't need to use distanceFromSpeaker for this
+    // incase you were wonder though, it is a lambda, cause of course it is
     public Shooter(DoubleSupplier distanceFromSpeaker) {
 
-        leftShooterMotor = new TalonFX(LEFT_SHOOTER_MOTOR_ID);
-        rightShooterMotor = new TalonFX(RIGHT_SHOOTER_MOTOR_ID);
-
+        // CREATE THE CONFIGURATIONS FOR THE TALONS HERE
+        // talon configs are set up differently than sparks, please use the doc if you want to spare your sanity
         var talonFXConfigs = new TalonFXConfiguration();
-
-        talonFXConfigs.neutralDeadband = 0.001;
-        talonFXConfigs.voltageCompSaturation = 12.0;
-        talonFXConfigs.neutralMode = NeutralModeValue.Coast;
-        leftShooterMotor.getConfigurator().apply(talonFXConfigs);
-        rightShooterMotor.getConfigurator().apply(talonFXConfigs);
-
+        
+        // ||||||||||||||||||||||||||||||||
 
         // give some default state to these guys
         // m_shooterCurrentState;
@@ -105,5 +102,3 @@ public class Shooter extends SubsystemBase {
         // ||||||||||||||||||||||||||||||||
 
     }
-
-    
