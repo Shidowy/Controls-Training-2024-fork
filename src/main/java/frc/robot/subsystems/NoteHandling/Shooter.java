@@ -1,9 +1,3 @@
-package frc.robot.subsystems.NoteHandling;
-
-
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -61,12 +55,10 @@ public class Shooter extends SubsystemBase {
         this.distanceFromSpeaker = distanceFromSpeaker;
         this.m_talonRight = new TalonFX(kShooterRightPort, "Mast");
         this.m_talonLeft = new TalonFX(kShooterLeftPort, "Mast");
-        
-        // Initialize motion magic requests for both motors
+          
         this.requestRight = new MotionMagicVelocityVoltage(0).withSlot(0);
         this.requestLeft = new MotionMagicVelocityVoltage(0).withSlot(0);
 
-        // Configure both motors
         configureMotors();
 
         shooterError = Shuffleboard.getTab("Swerve").add("ShooterError", 0).getEntry();
