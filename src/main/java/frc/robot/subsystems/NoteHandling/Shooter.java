@@ -23,10 +23,11 @@ import com.ctre.phoenix6.controls.*;
 public class Shooter extends SubsystemBase {
 
     public enum ShooterStates{
-        // MAKE STATES
-        // some considerations: off state, states for shooter at each type of scoring location, and a transition state between states
-
-        // ||||||||||||||||||||||||||||||||
+        OFF,
+        LOW_GOAL,
+        MID_GOAL,
+        HIGH_GOAL,
+        TRANSITION
     }
 
     public static ShooterStates m_shooterRequestedState;
