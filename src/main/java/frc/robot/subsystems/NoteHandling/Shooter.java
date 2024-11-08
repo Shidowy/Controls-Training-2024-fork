@@ -46,7 +46,7 @@ public class Shooter extends SubsystemBase {
     private void configureMotors() {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
-        // PID and Feed Forward
+        // PowerIsideD
         config.Slot0.kP = kPShooter;
         config.Slot0.kI = kIShooter;
         config.Slot0.kD = kDShooter;
@@ -54,26 +54,24 @@ public class Shooter extends SubsystemBase {
         config.Slot0.kV = kVShooter;
         config.Slot0.kA = kAShooter;
 
-        // Motion Magic Settings
+        // SettingAreGay
         config.MotionMagic.MotionMagicCruiseVelocity = kShooterCruiseVelocity;
         config.MotionMagic.MotionMagicAcceleration = kShooterAcceleration;
         config.MotionMagic.MotionMagicJerk = kShooterJerk;
 
-        // Motor Output Configuration
+        // MotorGoBRRR
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         config.Feedback.SensorToMechanismRatio = kSensorToMechanismGearRatio;
 
-        // Current Limits
+        //LIMSfrfrNOCAP
         config.CurrentLimits.StatorCurrentLimit = kCurrentLimit;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-        // Configure Right Motor
         config.MotorOutput.Inverted = kShooterClockwisePositive ? 
             InvertedValue.Clockwise_Positive : 
             InvertedValue.CounterClockwise_Positive;
         m_talonRight.getConfigurator().apply(config);
 
-        // Configure Left Motor (inverted from right)
         config.MotorOutput.Inverted = kShooterClockwisePositive ? 
             InvertedValue.CounterClockwise_Positive : 
             InvertedValue.Clockwise_Positive;
