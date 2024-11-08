@@ -1,23 +1,48 @@
 package frc.robot.subsystems.NoteHandling;
 
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+// Imports go here
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import static frc.robot.Constants.ShooterConstants.*;
+
+import java.util.function.DoubleSupplier;
+
+import static frc.robot.Constants.*;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.*;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.controls.*;
+package frc.robot.subsystems.NoteHandling;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import frc.robot.commands.Interpolation.InterpolatingTable;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 
+import java.util.function.DoubleSupplier;
+
 import static frc.robot.Constants.ShooterConstants.*;
+import static frc.robot.Constants.*;
 
 public class Shooter extends SubsystemBase {
 
     public enum ShooterStates {
         StateOff,
-        StateForward,
-        StateReverse,
-        StateFastForward
+        StateMovingToRequestedState,
+        StateCoast,
+        StateSpeaker,
+        StateAmp,
+        StatePass
     }
 
     private static ShooterStates m_shooterRequestedState = ShooterStates.StateOff;
@@ -28,16 +53,20 @@ public class Shooter extends SubsystemBase {
     private final TalonFX m_talonLeft;
     private final MotionMagicVelocityVoltage requestRight;
     private final MotionMagicVelocityVoltage requestLeft;
+    private final DoubleSupplier distanceFromSpeaker;
 
     private double desiredVelocity = 0;
 
-    public Shooter() {
+    public Shooter(DoubleSupplier distanceFromSpeaker) {
+        this.distanceFromSpeaker = distanceFromSpeaker;
         this.m_talonRight = new TalonFX(kShooterRightPort, "Mast");
         this.m_talonLeft = new TalonFX(kShooterLeftPort, "Mast");
         
+        // Initialize motion magic requests for both motors
         this.requestRight = new MotionMagicVelocityVoltage(0).withSlot(0);
         this.requestLeft = new MotionMagicVelocityVoltage(0).withSlot(0);
 
+        // Configure both motors
         configureMotors();
 
         shooterError = Shuffleboard.getTab("Swerve").add("ShooterError", 0).getEntry();
@@ -46,7 +75,6 @@ public class Shooter extends SubsystemBase {
     private void configureMotors() {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
-        // PowerIsideD
         config.Slot0.kP = kPShooter;
         config.Slot0.kI = kIShooter;
         config.Slot0.kD = kDShooter;
@@ -54,16 +82,13 @@ public class Shooter extends SubsystemBase {
         config.Slot0.kV = kVShooter;
         config.Slot0.kA = kAShooter;
 
-        // SettingAreGay
         config.MotionMagic.MotionMagicCruiseVelocity = kShooterCruiseVelocity;
         config.MotionMagic.MotionMagicAcceleration = kShooterAcceleration;
         config.MotionMagic.MotionMagicJerk = kShooterJerk;
 
-        // MotorGoBRRR
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         config.Feedback.SensorToMechanismRatio = kSensorToMechanismGearRatio;
 
-        //LIMSfrfrNOCAP
         config.CurrentLimits.StatorCurrentLimit = kCurrentLimit;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
@@ -89,16 +114,18 @@ public class Shooter extends SubsystemBase {
     private void updateDesiredVelocity() {
         switch (m_shooterRequestedState) {
             case StateOff:
+            case StateCoast:
                 desiredVelocity = 0;
                 break;
-            case StateForward:
-                desiredVelocity = kForwardSpeed;
+            case StateSpeaker:
+                desiredVelocity = InterpolatingTable.get(distanceFromSpeaker.getAsDouble())
+                    .shooterSpeedRotationsPerSecond;
                 break;
-            case StateReverse:
-                desiredVelocity = -kReverseSpeed;
+            case StateAmp:
+                desiredVelocity = 47.5;
                 break;
-            case StateFastForward:
-                desiredVelocity = kFastForwardSpeed;
+            case StatePass:
+                desiredVelocity = 50;
                 break;
         }
     }
@@ -119,7 +146,7 @@ public class Shooter extends SubsystemBase {
         if (getError() < kShooterErrorTolerance) {
             m_shooterCurrentState = m_shooterRequestedState;
         } else {
-            m_shooterCurrentState = m_shooterRequestedState;  // Still update to requested state
+            m_shooterCurrentState = ShooterStates.StateMovingToRequestedState;
         }
     }
 
