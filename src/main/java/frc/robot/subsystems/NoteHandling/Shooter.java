@@ -93,8 +93,7 @@ public class Shooter extends SubsystemBase {
       }
 
       public double getVelocity() {
-        // CHANGE DIS PLZ
-        return 0;
+        return desiredVelocity;
       }
     
       public double getError() {
