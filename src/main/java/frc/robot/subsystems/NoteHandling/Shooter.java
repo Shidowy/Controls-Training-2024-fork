@@ -46,6 +46,12 @@ public class Shooter extends SubsystemBase {
 
         var talonFXConfigs = new TalonFXConfiguration();
 
+        talonFXConfigs.neutralDeadband = 0.001;
+        talonFXConfigs.voltageCompSaturation = 12.0;
+        talonFXConfigs.neutralMode = NeutralModeValue.Coast;
+        leftShooterMotor.getConfigurator().apply(talonFXConfigs);
+        rightShooterMotor.getConfigurator().apply(talonFXConfigs);
+
 
         // give some default state to these guys
         // m_shooterCurrentState;
