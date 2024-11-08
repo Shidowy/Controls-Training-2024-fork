@@ -68,19 +68,28 @@ public class Shooter extends SubsystemBase {
             case OFF:
                 desiredVelocity = 0;
                 break;
-     
+            case LOW_GOAL:
+                desiredVelocity = LOW_GOAL_VELOCITY;
+                break;
+            case MID_GOAL:
+                desiredVelocity = MID_GOAL_VELOCITY;
+                break;
+            case HIGH_GOAL:
+                desiredVelocity = HIGH_GOAL_VELOCITY;
+                break;
+            case TRANSITION:
+                break;
+        }
         runControlLoop();
-    
-        // ERROR CHECKING GOES HERE
-
-        // ||||||||||||||||||||||||||||||||
-
     }
 
       public void runControlLoop() {
-        // SHOOTER SHENANIGANS GO HERE UNLESS YOU ARE TOO COOL FOR THAT
+        double currentVelocity = getVelocity();
+        double velocityError = desiredVelocity - currentVelocity;
+        double output = pidController.calculate(velocityError);
 
-        // ||||||||||||||||||||||||||||||||
+        leftShooterMotor.setControl(new VoltageOutput(output));
+        rightShooterMotor.setControl(new VoltageOutput(output));
       }
     
       // SO MANY METHODS TO MAKE (like 4), SO LITTLE TIME TO DO IT (literally 6 hours)
