@@ -52,21 +52,18 @@ public class Shooter extends SubsystemBase {
         leftShooterMotor.getConfigurator().apply(talonFXConfigs);
         rightShooterMotor.getConfigurator().apply(talonFXConfigs);
 
-
-        // give some default state to these guys
-        // m_shooterCurrentState;
-        // m_shooterRequestedState;
+        leftShooterMotor.setInverted(InvertedValue.Clockwise);
+        // rightShooterMotor.setInverted(InvertedValue.CounterClockwise);
 
     }
         
     @Override
     public void periodic() {
-
-
-        // SWITCH/IF STATEMENT GOES HERE
-
-        // ||||||||||||||||||||||||||||||||
-     
+        switch (m_shooterRequestedState) {
+            case OFF:
+                desiredVelocity = 0;
+                break;
+                
         runControlLoop();
     
         // ERROR CHECKING GOES HERE
