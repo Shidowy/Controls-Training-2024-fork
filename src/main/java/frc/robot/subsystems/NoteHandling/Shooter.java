@@ -97,17 +97,14 @@ public class Shooter extends SubsystemBase {
       }
     
       public double getError() {
-        
-        return 0;
+        return desiredVelocity - getVelocity();
       }
      
       public void requestState(ShooterStates requestedState) {
-        // CHANGE DIS PLZ
         m_shooterRequestedState = requestedState;
       }
      
       public ShooterStates getCurrentState() {
-        // CHANGE DIS PLZ
         return m_shooterCurrentState;
       }
     }
