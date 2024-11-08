@@ -45,25 +45,29 @@ public class Shooter extends SubsystemBase {
     // incase you were wonder though, it is a lambda, cause of course it is
     public Shooter(DoubleSupplier distanceFromSpeaker) {
 
-        // CREATE THE CONFIGURATIONS FOR THE TALONS HERE
-        // talon configs are set up differently than sparks, please use the doc if you want to spare your sanity
-        var talonFXConfigs = new TalonFXConfiguration();
-        
-        // ||||||||||||||||||||||||||||||||
+        leftShooterMotor = new TalonFX(LEFT_SHOOTER_MOTOR_ID);
+        rightShooterMotor = new TalonFX(RIGHT_SHOOTER_MOTOR_ID);
 
-        // give some default state to these guys
-        // m_shooterCurrentState;
-        // m_shooterRequestedState;
+        var talonFXConfigs = new TalonFXConfiguration();
+
+        talonFXConfigs.neutralDeadband = 0.001;
+        talonFXConfigs.voltageCompSaturation = 12.0;
+        talonFXConfigs.neutralMode = NeutralModeValue.Coast;
+        leftShooterMotor.getConfigurator().apply(talonFXConfigs);
+        rightShooterMotor.getConfigurator().apply(talonFXConfigs);
+
+        leftShooterMotor.setInverted(InvertedValue.Clockwise);
+        // rightShooterMotor.setInverted(InvertedValue.CounterClockwise);
 
     }
         
     @Override
     public void periodic() {
 
-
-        // SWITCH/IF STATEMENT GOES HERE
-
-        // ||||||||||||||||||||||||||||||||
+        switch (m_shooterRequestedState) {
+            case OFF:
+                desiredVelocity = 0;
+                break;
      
         runControlLoop();
     
