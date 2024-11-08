@@ -91,8 +91,6 @@ public class Shooter extends SubsystemBase {
         leftShooterMotor.setControl(new VoltageOutput(output));
         rightShooterMotor.setControl(new VoltageOutput(output));
       }
-    
-      // SO MANY METHODS TO MAKE (like 4), SO LITTLE TIME TO DO IT (literally 6 hours)
 
       public double getVelocity() {
         // CHANGE DIS PLZ
@@ -100,7 +98,7 @@ public class Shooter extends SubsystemBase {
       }
     
       public double getError() {
-        // CHANGE DIS PLZ
+        
         return 0;
       }
      
@@ -113,9 +111,6 @@ public class Shooter extends SubsystemBase {
         // CHANGE DIS PLZ
         return m_shooterCurrentState;
       }
-
-        // ||||||||||||||||||||||||||||||||
-
     }
 
     
