@@ -92,12 +92,12 @@ public class Shooter extends SubsystemBase {
         rightShooterMotor.setControl(new VoltageOutput(output));
       }
 
-      public double getVelocity() {
-        return desiredVelocity;
+     public double getVelocity() {
+        return m_talonLeft.getVelocity().getValue();
       }
     
       public double getError() {
-        return desiredVelocity - getVelocity();
+        return Math.abs(getVelocity() - desiredVelocity);
       }
      
       public void requestState(ShooterStates requestedState) {
