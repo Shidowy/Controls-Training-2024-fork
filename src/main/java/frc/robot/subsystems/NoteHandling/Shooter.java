@@ -62,11 +62,10 @@ public class Shooter extends SubsystemBase {
         this.m_talonRight = new TalonFX(kShooterRightPort, "Mast");
         this.m_talonLeft = new TalonFX(kShooterLeftPort, "Mast");
         
-        // Initialize motion magic requests for both motors
         this.requestRight = new MotionMagicVelocityVoltage(0).withSlot(0);
         this.requestLeft = new MotionMagicVelocityVoltage(0).withSlot(0);
 
-        // Configure both motors
+        
         configureMotors();
 
         shooterError = Shuffleboard.getTab("Swerve").add("ShooterError", 0).getEntry();
@@ -114,6 +113,8 @@ public class Shooter extends SubsystemBase {
     private void updateDesiredVelocity() {
         switch (m_shooterRequestedState) {
             case StateOff:
+                desiredVelocity = 0;
+                break
             case StateCoast:
                 desiredVelocity = 0;
                 break;
@@ -138,7 +139,6 @@ public class Shooter extends SubsystemBase {
             
         m_talonLeft.setControl(requestLeft
             .withVelocity(desiredVelocity)
-            .withLimitReverseMotion(true)
             .withEnableFOC(true));
     }
 
