@@ -32,38 +32,39 @@ public class Shooter extends SubsystemBase {
 
     public static ShooterStates m_shooterRequestedState;
     public static ShooterStates m_shooterCurrentState;
+ 
+    // CREATE TALON MOTORS HERE
+    // the shooter has two talon motors on it, have fun
 
-    private final TalonFX leftShooterMotor;
-    private final TalonFX rightShooterMotor
+    // ||||||||||||||||||||||||||||||||
 
     private double desiredVelocity = 0;
     private double desiredVoltage = 0;
 
+    // you might notice a new type right below here called a "DoubleSupplier," don't worry about it, you won't need to use distanceFromSpeaker for this
+    // incase you were wonder though, it is a lambda, cause of course it is
     public Shooter(DoubleSupplier distanceFromSpeaker) {
 
-        leftShooterMotor = new TalonFX(LEFT_SHOOTER_MOTOR_ID);
-        rightShooterMotor = new TalonFX(RIGHT_SHOOTER_MOTOR_ID);
-
+        // CREATE THE CONFIGURATIONS FOR THE TALONS HERE
+        // talon configs are set up differently than sparks, please use the doc if you want to spare your sanity
         var talonFXConfigs = new TalonFXConfiguration();
+        
+        // ||||||||||||||||||||||||||||||||
 
-        talonFXConfigs.neutralDeadband = 0.001;
-        talonFXConfigs.voltageCompSaturation = 12.0;
-        talonFXConfigs.neutralMode = NeutralModeValue.Coast;
-        leftShooterMotor.getConfigurator().apply(talonFXConfigs);
-        rightShooterMotor.getConfigurator().apply(talonFXConfigs);
-
-        leftShooterMotor.setInverted(InvertedValue.Clockwise);
-        // rightShooterMotor.setInverted(InvertedValue.CounterClockwise);
+        // give some default state to these guys
+        // m_shooterCurrentState;
+        // m_shooterRequestedState;
 
     }
         
     @Override
     public void periodic() {
-        switch (m_shooterRequestedState) {
-            case OFF:
-                desiredVelocity = 0;
-                break;
-                
+
+
+        // SWITCH/IF STATEMENT GOES HERE
+
+        // ||||||||||||||||||||||||||||||||
+     
         runControlLoop();
     
         // ERROR CHECKING GOES HERE
@@ -92,11 +93,12 @@ public class Shooter extends SubsystemBase {
      
       public void requestState(ShooterStates requestedState) {
         // CHANGE DIS PLZ
+        m_shooterRequestedState = requestedState;
       }
      
       public ShooterStates getCurrentState() {
         // CHANGE DIS PLZ
-        return null;
+        return m_shooterCurrentState;
       }
 
         // ||||||||||||||||||||||||||||||||
