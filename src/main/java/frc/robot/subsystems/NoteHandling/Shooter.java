@@ -47,18 +47,19 @@ public class Shooter extends SubsystemBase {
         // CREATE THE CONFIGURATIONS FOR THE TALONS HERE
         // talon configs are set up differently than sparks, please use the doc if you want to spare your sanity
         TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
-    
+
         talonFXConfigs.MotorOutput = new MotorOutput();
-        talonFXConfigs.MotorOutput.neutralMode = NeutralMode.Coast;
-        talonFXConfigs.MotorOutput.inverted = InvertType.None;
-    
+        talonFXConfigs.MotorOutput.neutralMode = NeutralModeValue.Coast;
+        talonFXConfigs.MotorOutput.inverted = InvertedValue.None;
+
         talonFXConfigs.CurrentLimits = new CurrentLimitConfiguration();
         talonFXConfigs.CurrentLimits.enable = true;
         talonFXConfigs.CurrentLimits.currentLimit = 40;
-        
-        TalonFX talonFXMotor = new TalonFX(1);
-        talonFXMotor.configAllSettings(talonFXConfigs);
 
+        talonFXMotor1 = new TalonFX(1);
+        talonFXMotor2 = new TalonFX(2);
+        talonFXMotor1.configAllSettings(talonFXConfigs);
+        talonFXMotor2.configAllSettings(talonFXConfigs);
     }
         
     @Override
