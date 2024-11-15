@@ -55,11 +55,7 @@ public class Shooter extends SubsystemBase {
         talonFXConfigs.CurrentLimits = new CurrentLimitConfiguration();
         talonFXConfigs.CurrentLimits.enable = true;
         talonFXConfigs.CurrentLimits.currentLimit = 40;
-    
-        talonFXConfigs.Feedback = new FeedbackConfiguration();
-        talonFXConfigs.Feedback.sensorType = FeedbackDevice.IntegratedSensor;
-        talonFXConfigs.Feedback.sensorCoefficient = 1.0;
-    
+        
         TalonFX talonFXMotor = new TalonFX(1);
         talonFXMotor.configAllSettings(talonFXConfigs);
 
