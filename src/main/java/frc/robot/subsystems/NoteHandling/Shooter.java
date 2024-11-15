@@ -50,7 +50,7 @@ public class Shooter extends SubsystemBase {
 
         talonFXConfigs.MotorOutput = new MotorOutput();
         talonFXConfigs.MotorOutput.neutralMode = NeutralModeValue.Coast;
-        talonFXConfigs.MotorOutput.inverted = InvertedValue.None;
+        talonFXConfigs.MotorOutput.Inverted = InvertedValue.Positive_Clockwise;
 
         talonFXConfigs.CurrentLimits = new CurrentLimitConfiguration();
         talonFXConfigs.CurrentLimits.enable = true;
@@ -58,8 +58,8 @@ public class Shooter extends SubsystemBase {
 
         talonFXMotor1 = new TalonFX(1);
         talonFXMotor2 = new TalonFX(2);
-        talonFXMotor1.configAllSettings(talonFXConfigs);
-        talonFXMotor2.configAllSettings(talonFXConfigs);
+        talonFXMotor1.apply(talonFXConfigs);
+        talonFXMotor2.apply(talonFXConfigs);
     }
         
     @Override
