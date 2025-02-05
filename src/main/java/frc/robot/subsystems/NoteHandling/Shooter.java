@@ -6,11 +6,14 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 // Imports go here
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.Interpolation.InterpolatingTable;
+import frc.robot.commands.Interpolation.ShotParameter;
+import frc.robot.subsystems.NoteHandling.Pivot.PivotStates;
 
 import static frc.robot.Constants.ShooterConstants.*;
 
 import java.util.function.DoubleSupplier;
- 
+
 import static frc.robot.Constants.*;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.*;
@@ -18,110 +21,174 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.*;
 
-// FOLLOW ALONG THIS DOCUMENTATION: https://docs.google.com/document/d/143tNsvYQFAErQTJDxO9d1rwM7pv80vpLfLK-WiIEOiw/edit?tab=t.0
 
 public class Shooter extends SubsystemBase {
 
     public enum ShooterStates{
-        // MAKE STATES
-        // some considerations: off state, states for shooter at each type of scoring location, and a transition state between states
-
-        // ||||||||||||||||||||||||||||||||
+        StateOff,
+        StateMovingToRequestedState,
+        StateCoast,
+        StateSpeaker,
+        StateSubwoofer,
+        StatePodium,
+        StateAmp,
+        StateTrap,
+        StatePass
     }
 
     public static ShooterStates m_shooterRequestedState;
     public static ShooterStates m_shooterCurrentState;
- 
-    // CREATE TALON MOTORS HERE
-    // the shooter has two talon motors on it, have fun
+    
+    GenericEntry shooterError;
+    
+    private final TalonFX m_talonRight = new TalonFX(kShooterRightPort,"Mast");
+    private final TalonFX m_talonLeft = new TalonFX(kShooterLeftPort,"Mast");
 
-    // ||||||||||||||||||||||||||||||||
+    private final MotionMagicVelocityVoltage request = new MotionMagicVelocityVoltage(0).withSlot(0);
+
 
     private double desiredVelocity = 0;
     private double desiredVoltage = 0;
+    DoubleSupplier distanceFromSpeaker;
 
-    // you might notice a new type right below here called a "DoubleSupplier," don't worry about it, you won't need to use distanceFromSpeaker for this
-    // incase you were wonder though, it is a lambda, cause of course it is
     public Shooter(DoubleSupplier distanceFromSpeaker) {
 
-        // CREATE THE CONFIGURATIONS FOR THE TALONS HERE
-        // talon configs are set up differently than sparks, please use the doc if you want to spare your sanity
-        TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
+      this.distanceFromSpeaker = distanceFromSpeaker;
 
-        talonFXConfigs.MotorOutput = new MotorOutput();
-        talonFXConfigs.MotorOutput.neutralMode = NeutralModeValue.Coast;
-        talonFXConfigs.MotorOutput.Inverted = InvertedValue.Positive_Clockwise;
+        var talonFXConfigs = new TalonFXConfiguration();
 
-        talonFXConfigs.CurrentLimits = new CurrentLimitConfiguration();
-        talonFXConfigs.CurrentLimits.enable = true;
-        talonFXConfigs.CurrentLimits.currentLimit = 40;
 
-        talonFXMotor1 = new TalonFX(1);
-        talonFXMotor2 = new TalonFX(2);
-        talonFXMotor1.apply(talonFXConfigs);
-        talonFXMotor2.apply(talonFXConfigs);
-    }
+        var slot0Configs = talonFXConfigs.Slot0;
+        slot0Configs.kS = kSShooter;
+        slot0Configs.kV = kVShooter;
+        slot0Configs.kA = kAShooter; 
+
+        slot0Configs.kP = kPShooter;
+        slot0Configs.kI = kIShooter;
+        slot0Configs.kD = kDShooter; 
+
+
+        var motionMagicConfigs = talonFXConfigs.MotionMagic;
+        motionMagicConfigs.MotionMagicCruiseVelocity = kShooterCruiseVelocity;
+        motionMagicConfigs.MotionMagicAcceleration = kShooterAcceleration;
+        motionMagicConfigs.MotionMagicJerk = kShooterJerk;
+
+        var motorOutputConfigs = talonFXConfigs.MotorOutput;
+        motorOutputConfigs.NeutralMode=NeutralModeValue.Coast;
+       
+        if (kShooterClockwisePositive)
+            motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
+        else motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
+
+        var feedbackConfigs = talonFXConfigs.Feedback;
+        feedbackConfigs.SensorToMechanismRatio = kSensorToMechanismGearRatio;
+
+        var currentConfigs = talonFXConfigs.CurrentLimits;
+        currentConfigs.StatorCurrentLimitEnable = true;
+        currentConfigs.StatorCurrentLimit = kCurrentLimit;
+
+        m_talonLeft.getConfigurator().apply(talonFXConfigs);
         
+        if (kShooterClockwisePositive) {
+            motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
+        }
+        else motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
+
+        m_talonRight.getConfigurator().apply(talonFXConfigs);
+        
+        m_shooterCurrentState = ShooterStates.StateOff;
+        m_shooterRequestedState = ShooterStates.StateOff;
+
+        shooterError = Shuffleboard.getTab("Swerve").add("ShooterError", 0).getEntry();
+    }
+
+
     @Override
     public void periodic() {
+        // if (m_shooterCurrentState == ShooterStates.StateSpeaker)
+        //     shooterError.setDouble(1);
+        // else shooterError.setDouble(0);
 
+       shooterError.setDouble(getError());
 
-        // SWITCH/IF STATEMENT GOES HERE
-
-        // ||||||||||||||||||||||||||||||||
+        switch (m_shooterRequestedState) {
+          case StateOff:
+            desiredVelocity = 0; //21
+            desiredVoltage = 0;
+            break;
+          case StateCoast:
+            desiredVelocity = 0;
+            desiredVoltage = 0;
+            break;
+          case StateSpeaker:
+            desiredVelocity = InterpolatingTable.get(distanceFromSpeaker.getAsDouble()).shooterSpeedRotationsPerSecond; // -1
+            desiredVoltage = 0;
+            break;
+          case StateAmp:
+            desiredVelocity = 47.5; 
+            desiredVoltage = 0;
+            break;
+          case StatePass:
+            desiredVelocity = 50;
+            desiredVoltage = 0;
+            break;
+        }
      
         runControlLoop();
     
-        // ERROR CHECKING GOES HERE
-
-        // ||||||||||||||||||||||||||||||||
-
-    }
-
-      public void runControlLoop() {
-        // SHOOTER SHENANIGANS GO HERE UNLESS YOU ARE TOO COOL FOR THAT
-        // create a Dynamic Motion Magic request, voltage output
-        // default velocity of 80 rps, acceleration of 400 rot/s^2, and jerk of 4000 rot/s^3
-        final DynamicMotionMagicVoltage m_request = new DynamicMotionMagicVoltage(0, 80, 400, 4000);
-
-        if (m_joy.getAButton()) {
-          // while the joystick A button is held, use a slower profile
-          m_request.Velocity = 40; // rps
-          m_request.Acceleration = 80; // rot/s^2
-          m_request.Jerk = 400; // rot/s^3
-        } else {
-          // otherwise use a faster profile
-          m_request.Velocity = 80; // rps
-          m_request.Acceleration = 400; // rot/s^2
-          m_request.Jerk = 4000; // rot/s^3
+        if (getError() < kShooterErrorTolerance)
+          m_shooterCurrentState = m_shooterRequestedState;
+        else
+          m_shooterCurrentState = ShooterStates.StateMovingToRequestedState;  
         }
+    
+      public void runControlLoop() {
+        if(desiredVelocity!=0){
+            m_talonRight.setControl(request.withVelocity(desiredVelocity).withLimitReverseMotion(true).withEnableFOC(true));
+            //m_talonLeft.setVoltage(m_talonRight.getMotorVoltage().getValueAsDouble());
+            double voltagePercent = m_talonRight.getMotorVoltage().getValueAsDouble() / kNominalVoltage;
+            m_talonLeft.setControl(new DutyCycleOut(voltagePercent).withEnableFOC(true));
+            // m_talonLeft.setVoltage(.25);
+            // m_talonRight.setVoltage(.25);
 
-// set target position to 100 rotations
-        m_talonFX.setControl(m_request.withPosition(100));
-        // ||||||||||||||||||||||||||||||||
+        }
+        else{
+            m_talonLeft.setVoltage(desiredVoltage);
+            m_talonRight.setVoltage(desiredVoltage);
+        }
       }
     
-      // SO MANY METHODS TO MAKE (like 4), SO LITTLE TIME TO DO IT (literally 6 hours)
-
       public double getVelocity() {
-        // CHANGE DIS PLZ
-        return 0;
+        return m_talonLeft.getVelocity().getValue();
       }
     
       public double getError() {
-        return abs(shooter);
+        return Math.abs(getVelocity() - desiredVelocity);
       }
      
+      // example of a "setter" method
       public void requestState(ShooterStates requestedState) {
-        // CHANGE DIS PLZ
+        m_shooterRequestedState = requestedState;
       }
      
+      // example of a "getter" method
       public ShooterStates getCurrentState() {
-        return ;
+        return m_shooterCurrentState;
       }
-
-        // ||||||||||||||||||||||||||||||||
-
+    
+      // misc methods go here, getters and setters should follow above format
     }
 
     
+
+
+
+
+    
+
+
+
+
+
+
+  
